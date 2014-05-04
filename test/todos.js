@@ -263,6 +263,34 @@ describe('Todos', function(){
       });
     });
 
+    it('should reject an invalid status', function(done){
+
+      // Given
+      Todos.prototype.create = function(options, callback){
+        callback(null, 123);
+      };
+
+      internals.prepareServer(function(server){
+
+        // When
+        server.inject({
+          method: 'POST',
+          url: '/todos',
+          payload: JSON.stringify({
+            title: 'Test',
+            status: 'blah'
+          })
+        }, function(response){
+
+          // Then
+          expect(response.statusCode).to.equal(400);
+
+          done();
+        });
+      });
+    });
+
+
     it('should default to status to `not started` if no status is given', function(done){
 
       // Given
@@ -367,5 +395,266 @@ describe('Todos', function(){
       });
     });
 
+  });
+
+  describe('PUT', function(){
+    var orig;
+
+    beforeEach(function(done){
+      orig = Todos.prototype.update;
+      done();
+    });
+
+    afterEach(function(done){
+      Todos.prototype.update = orig;
+      done();
+    });
+
+    it('should return a 500 if an error occurs', function(done){
+
+      // Given
+      Todos.prototype.update = function(options, callback){
+        callback(new Error('Error'));
+      };
+
+      internals.prepareServer(function(server){
+
+        // When
+        server.inject({
+          method: 'PUT',
+          url: '/todos/123',
+          payload: JSON.stringify({
+            title: 'Test',
+            status: 'not started'
+          })
+        }, function(response){
+
+          // Then
+          expect(response.statusCode).to.equal(500);
+
+          done();
+        });
+      });
+    });
+
+    it('should require a title', function(done){
+
+      // Given
+      Todos.prototype.update = function(options, callback){
+        callback(null, 123);
+      };
+
+      internals.prepareServer(function(server){
+
+        // When
+        server.inject({
+          method: 'PUT',
+          url: '/todos/123',
+          payload: JSON.stringify({
+          })
+        }, function(response){
+
+          // Then
+          expect(response.statusCode).to.equal(400);
+
+          done();
+        });
+      });
+    });
+
+
+    it('should require a status', function(done){
+
+      // Given
+      Todos.prototype.update = function(options, callback){
+        callback(null, 123);
+      };
+
+      internals.prepareServer(function(server){
+
+        // When
+        server.inject({
+          method: 'PUT',
+          url: '/todos/123',
+          payload: JSON.stringify({
+          })
+        }, function(response){
+
+          // Then
+          expect(response.statusCode).to.equal(400);
+
+          done();
+        });
+      });
+    });
+
+    it('should accept a valid status of `done`', function(done){
+
+      // Given
+      Todos.prototype.update = function(options, callback){
+        callback(null, 123);
+      };
+
+      internals.prepareServer(function(server){
+
+        // When
+        server.inject({
+          method: 'PUT',
+          url: '/todos/123',
+          payload: JSON.stringify({
+            title: 'Test',
+            status: 'done'
+          })
+        }, function(response){
+
+          // Then
+          expect(response.statusCode).to.equal(200);
+
+          done();
+        });
+      });
+    });
+
+    it('should accept a valid status of `in progress`', function(done){
+
+      // Given
+      Todos.prototype.update = function(options, callback){
+        callback(null, 123);
+      };
+
+      internals.prepareServer(function(server){
+
+        // When
+        server.inject({
+          method: 'PUT',
+          url: '/todos/123',
+          payload: JSON.stringify({
+            title: 'Test',
+            status: 'in progress'
+          })
+        }, function(response){
+
+          // Then
+          expect(response.statusCode).to.equal(200);
+
+          done();
+        });
+      });
+    });
+
+    it('should accept a valid status of `not started`', function(done){
+
+      // Given
+      Todos.prototype.update = function(options, callback){
+        callback(null, 123);
+      };
+
+      internals.prepareServer(function(server){
+
+        // When
+        server.inject({
+          method: 'PUT',
+          url: '/todos/123',
+          payload: JSON.stringify({
+            title: 'Test',
+            status: 'not started'
+          })
+        }, function(response){
+
+          // Then
+          expect(response.statusCode).to.equal(200);
+
+          done();
+        });
+      });
+    });
+
+    it('should reject an invalid status', function(done){
+
+      // Given
+      Todos.prototype.update = function(options, callback){
+        callback(null, 123);
+      };
+
+      internals.prepareServer(function(server){
+
+        // When
+        server.inject({
+          method: 'PUT',
+          url: '/todos/123',
+          payload: JSON.stringify({
+            title: 'Test',
+            status: 'blah'
+          })
+        }, function(response){
+
+          // Then
+          expect(response.statusCode).to.equal(400);
+
+          done();
+        });
+      });
+    });
+
+  });
+
+  describe('DELETE', function(){
+    var orig;
+
+    beforeEach(function(done){
+      orig = Todos.prototype.destroy;
+      done();
+    });
+
+    afterEach(function(done){
+      Todos.prototype.destroy = orig;
+      done();
+    });
+
+    it('should return a 500 if an error occurs', function(done){
+
+      // Given
+      Todos.prototype.destroy = function(options, callback){
+        callback(new Error('Error'));
+      };
+
+      internals.prepareServer(function(server){
+
+        // When
+        server.inject({
+          method: 'DELETE',
+          url: '/todos/123'
+        }, function(response){
+
+          // Then
+          expect(response.statusCode).to.equal(500);
+
+          done();
+        });
+      });
+    });
+
+    it('should return a 200 if successful', function(done){
+
+      // Given
+      Todos.prototype.destroy = function(options, callback){
+        callback(null, options.id);
+      };
+
+      internals.prepareServer(function(server){
+
+        // When
+        server.inject({
+          method: 'DELETE',
+          url: '/todos/123'
+        }, function(response){
+
+          // Then
+          expect(response.statusCode).to.equal(200);
+
+          done();
+        });
+      });
+    });
   });
 });
