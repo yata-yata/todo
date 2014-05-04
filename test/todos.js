@@ -101,5 +101,47 @@ describe('Todos', function(){
         });
       });
     });
+
+    it('should return a 500 if an error is returned when trying to access by id', function(done){
+
+      // Given
+      Todos.prototype.get = function(options, callback){
+        callback(new Error('Error'));
+      };
+
+      internals.prepareServer(function(server){
+
+        // When
+        server.inject({ method: 'GET', url: '/todos/123' }, function(response){
+
+          // Then
+          expect(response.statusCode).to.equal(500);
+
+          done();
+        });
+      });
+    });
+
+    it('should return a 500 if an error is returned when trying to access all', function(done){
+
+      // Given
+      Todos.prototype.get = function(options, callback){
+        callback(new Error('Error'));
+      };
+
+      internals.prepareServer(function(server){
+
+        // When
+        server.inject({ method: 'GET', url: '/todos' }, function(response){
+
+          // Then
+          expect(response.statusCode).to.equal(500);
+
+          done();
+        });
+      });
+    });
+
+
   });
 });
