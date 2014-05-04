@@ -1,9 +1,9 @@
 {
   "name": "todo",
-  "version": "0.0.0",
+  "main": "index",
+  "version": "0.1.0",
   "description": "Todo Endpoints",
-  "main": "index.js",
-  "author": "",
+  "author": "Michael Davis",
   "license": "MIT",
   "dependencies": {
     "joi": "^3.1.0",
