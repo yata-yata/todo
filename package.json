@@ -9,9 +9,14 @@
     "joi": "^3.1.0",
     "hoek": "^2.1.0",
     "boom": "^2.4.1",
+    "mongodb": "^1.4.3",
     "mongoose": "^3.8.8"
   },
   "devDependencies": {
-    "lab": "^3.1.1"
+    "lab": "^3.1.1",
+    "hapi": "^4.1.0"
+  },
+  "scripts": {
+    "test": "node ./node_modules/lab/bin/lab -c -v"
   }
 }
