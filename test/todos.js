@@ -101,5 +101,10 @@ describe('Todos', function(){
         });
       });
     });
+
+    it('should fail', function(done){
+      expect(true).to.equal(false);
+      done();
+    });
   });
 });
