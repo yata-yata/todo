@@ -71,15 +71,35 @@ describe('Todos', function(){
       internals.prepareServer(function(server){
 
         // When
-        server.inject({ method: 'GET', url: '/todos' }, function(response){
+        server.inject({ method: 'GET', url: '/todos/123' }, function(response){
 
           // Then
           expect(response.result).to.be.an('object');
+          expect(response.result).to.not.be.instanceOf(Array);
 
           done();
         });
       });
     });
 
+    it('should return a 404 if an id is passed, but no object is found', function(done){
+
+      // Given
+      Todos.prototype.get = function(options, callback){
+        callback(null, null);
+      };
+
+      internals.prepareServer(function(server){
+
+        // When
+        server.inject({ method: 'GET', url: '/todos/123' }, function(response){
+
+          // Then
+          expect(response.statusCode).to.equal(404);
+
+          done();
+        });
+      });
+    });
   });
 });
