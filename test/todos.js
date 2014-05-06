@@ -1,10 +1,14 @@
 // Load modules
 var Lab = require('lab'),
     Hapi = require('hapi'),
-    Todos = require('../lib/services/todos'),
+    Nock = require('nock'),
 
     // Declare internals
     internals = {},
+
+    // Declare configs
+    orchestrateUrl = 'https://api.orchestrate.io/',
+    baseUri = '/v0/todos',
 
     // Test aliases
     expect = Lab.expect,
@@ -27,24 +31,13 @@ internals.prepareServer = function(callback){
 describe('Todos', function(){
 
   describe('GET', function(){
-    var orig;
-
-    beforeEach(function(done){
-      orig = Todos.prototype.get;
-      done();
-    });
-
-    afterEach(function(done){
-      Todos.prototype.get = orig;
-      done();
-    });
 
     it('should return an array of todos if no ID is passed', function(done){
 
       // Given
-      Todos.prototype.get = function(options, callback){
-        callback(null, [1,2,3]);
-      };
+      Nock(orchestrateUrl)
+        .get(baseUri)
+        .replyWithFile(200, __dirname + '/fixtures/list.json');
 
       internals.prepareServer(function(server){
 
@@ -62,11 +55,12 @@ describe('Todos', function(){
     it('should return a todo object if an id is passed', function(done){
 
       // Given
-      Todos.prototype.get = function(options, callback){
-        callback(null, {
-          title: 'todo'
-        });
-      };
+      Nock(orchestrateUrl)
+        .filteringPath(function(path) {
+          return baseUri + '/123';
+        })
+        .get(baseUri + '/123')
+        .replyWithFile(200, __dirname + '/fixtures/todo.json');
 
       internals.prepareServer(function(server){
 
@@ -85,9 +79,12 @@ describe('Todos', function(){
     it('should return a 404 if an id is passed, but no object is found', function(done){
 
       // Given
-      Todos.prototype.get = function(options, callback){
-        callback(null, null);
-      };
+      Nock(orchestrateUrl)
+        .filteringPath(function(path) {
+          return baseUri + '/123';
+        })
+        .get(baseUri + '/123')
+        .reply(404);
 
       internals.prepareServer(function(server){
 
@@ -105,9 +102,12 @@ describe('Todos', function(){
     it('should return a 500 if an error is returned when trying to access by id', function(done){
 
       // Given
-      Todos.prototype.get = function(options, callback){
-        callback(new Error('Error'));
-      };
+      Nock(orchestrateUrl)
+        .filteringPath(function(path) {
+          return baseUri + '/123';
+        })
+        .get(baseUri + '/123')
+        .reply(500);
 
       internals.prepareServer(function(server){
 
@@ -125,9 +125,9 @@ describe('Todos', function(){
     it('should return a 500 if an error is returned when trying to access all', function(done){
 
       // Given
-      Todos.prototype.get = function(options, callback){
-        callback(new Error('Error'));
-      };
+      Nock(orchestrateUrl)
+        .get(baseUri)
+        .reply(500);
 
       internals.prepareServer(function(server){
 
@@ -145,33 +145,17 @@ describe('Todos', function(){
   });
 
   describe('POST', function(){
-    var orig;
-
-    beforeEach(function(done){
-      orig = Todos.prototype.create;
-      done();
-    });
-
-    afterEach(function(done){
-      Todos.prototype.create = orig;
-      done();
-    });
 
     it('should require a title', function(done){
 
       // Given
-      Todos.prototype.create = function(options, callback){
-        callback(null, 123);
-      };
-
       internals.prepareServer(function(server){
 
         // When
         server.inject({
           method: 'POST',
           url: '/todos',
-          payload: JSON.stringify({
-          })
+          payload: JSON.stringify({})
         }, function(response){
 
           // Then
@@ -185,9 +169,15 @@ describe('Todos', function(){
     it('should accept a valid status of `done`', function(done){
 
       // Given
-      Todos.prototype.create = function(options, callback){
-        callback(null, 123);
-      };
+      Nock(orchestrateUrl)
+        .filteringRequestBody(function(path) {
+          return '*';
+        })
+        .filteringPath(function(path) {
+          return baseUri + '/123';
+        })
+        .put(baseUri + '/123', '*')
+        .reply(201);
 
       internals.prepareServer(function(server){
 
@@ -212,9 +202,15 @@ describe('Todos', function(){
     it('should accept a valid status of `in progress`', function(done){
 
       // Given
-      Todos.prototype.create = function(options, callback){
-        callback(null, 123);
-      };
+      Nock(orchestrateUrl)
+        .filteringRequestBody(function(path) {
+          return '*';
+        })
+        .filteringPath(function(path) {
+          return baseUri + '/123';
+        })
+        .put(baseUri + '/123', '*')
+        .reply(201);
 
       internals.prepareServer(function(server){
 
@@ -239,9 +235,15 @@ describe('Todos', function(){
     it('should accept a valid status of `not started`', function(done){
 
       // Given
-      Todos.prototype.create = function(options, callback){
-        callback(null, 123);
-      };
+      Nock(orchestrateUrl)
+        .filteringRequestBody(function(path) {
+          return '*';
+        })
+        .filteringPath(function(path) {
+          return baseUri + '/123';
+        })
+        .put(baseUri + '/123', '*')
+        .reply(201);
 
       internals.prepareServer(function(server){
 
@@ -266,10 +268,6 @@ describe('Todos', function(){
     it('should reject an invalid status', function(done){
 
       // Given
-      Todos.prototype.create = function(options, callback){
-        callback(null, 123);
-      };
-
       internals.prepareServer(function(server){
 
         // When
@@ -294,9 +292,15 @@ describe('Todos', function(){
     it('should default to status to `not started` if no status is given', function(done){
 
       // Given
-      Todos.prototype.create = function(options, callback){
-        callback(null, 123);
-      };
+      Nock(orchestrateUrl)
+        .filteringRequestBody(function(path) {
+          return '*';
+        })
+        .filteringPath(function(path) {
+          return baseUri + '/123';
+        })
+        .put(baseUri + '/123', '*')
+        .reply(201);
 
       internals.prepareServer(function(server){
 
@@ -320,9 +324,15 @@ describe('Todos', function(){
     it('should return a 201 status code if successful', function(done){
 
       // Given
-      Todos.prototype.create = function(options, callback){
-        callback(null, 123);
-      };
+      Nock(orchestrateUrl)
+        .filteringRequestBody(function(path) {
+          return '*';
+        })
+        .filteringPath(function(path) {
+          return baseUri + '/123';
+        })
+        .put(baseUri + '/123', '*')
+        .reply(201);
 
       internals.prepareServer(function(server){
 
@@ -346,9 +356,15 @@ describe('Todos', function(){
     it('should return a location header of `/todos/{id}` if successful', function(done){
 
       // Given
-      Todos.prototype.create = function(options, callback){
-        callback(null, 123);
-      };
+      Nock(orchestrateUrl)
+        .filteringRequestBody(function(path) {
+          return '*';
+        })
+        .filteringPath(function(path) {
+          return baseUri + '/123';
+        })
+        .put(baseUri + '/123', '*')
+        .reply(201);
 
       internals.prepareServer(function(server){
 
@@ -362,7 +378,7 @@ describe('Todos', function(){
         }, function(response){
 
           // Then
-          expect(response.headers.location).to.equal('/todos/123');
+          expect(response.headers.location).to.include('/todos/');
 
           done();
         });
@@ -372,9 +388,15 @@ describe('Todos', function(){
     it('should return a 500 if an error occurs', function(done){
 
       // Given
-      Todos.prototype.create = function(options, callback){
-        callback(new Error('Error'));
-      };
+      Nock(orchestrateUrl)
+        .filteringRequestBody(function(path) {
+          return '*';
+        })
+        .filteringPath(function(path) {
+          return baseUri + '/123';
+        })
+        .put(baseUri + '/123', '*')
+        .reply(500);
 
       internals.prepareServer(function(server){
 
@@ -398,24 +420,19 @@ describe('Todos', function(){
   });
 
   describe('PUT', function(){
-    var orig;
-
-    beforeEach(function(done){
-      orig = Todos.prototype.update;
-      done();
-    });
-
-    afterEach(function(done){
-      Todos.prototype.update = orig;
-      done();
-    });
 
     it('should return a 500 if an error occurs', function(done){
 
       // Given
-      Todos.prototype.update = function(options, callback){
-        callback(new Error('Error'));
-      };
+      Nock(orchestrateUrl)
+        .filteringRequestBody(function(path) {
+          return '*';
+        })
+        .filteringPath(function(path) {
+          return baseUri + '/123';
+        })
+        .put(baseUri + '/123', '*')
+        .reply(500);
 
       internals.prepareServer(function(server){
 
@@ -440,10 +457,6 @@ describe('Todos', function(){
     it('should require a title', function(done){
 
       // Given
-      Todos.prototype.update = function(options, callback){
-        callback(null, 123);
-      };
-
       internals.prepareServer(function(server){
 
         // When
@@ -466,10 +479,6 @@ describe('Todos', function(){
     it('should require a status', function(done){
 
       // Given
-      Todos.prototype.update = function(options, callback){
-        callback(null, 123);
-      };
-
       internals.prepareServer(function(server){
 
         // When
@@ -491,9 +500,15 @@ describe('Todos', function(){
     it('should accept a valid status of `done`', function(done){
 
       // Given
-      Todos.prototype.update = function(options, callback){
-        callback(null, 123);
-      };
+      Nock(orchestrateUrl)
+        .filteringRequestBody(function(path) {
+          return '*';
+        })
+        .filteringPath(function(path) {
+          return baseUri + '/123';
+        })
+        .put(baseUri + '/123', '*')
+        .reply(200);
 
       internals.prepareServer(function(server){
 
@@ -518,9 +533,15 @@ describe('Todos', function(){
     it('should accept a valid status of `in progress`', function(done){
 
       // Given
-      Todos.prototype.update = function(options, callback){
-        callback(null, 123);
-      };
+      Nock(orchestrateUrl)
+        .filteringRequestBody(function(path) {
+          return '*';
+        })
+        .filteringPath(function(path) {
+          return baseUri + '/123';
+        })
+        .put(baseUri + '/123', '*')
+        .reply(200);
 
       internals.prepareServer(function(server){
 
@@ -545,9 +566,15 @@ describe('Todos', function(){
     it('should accept a valid status of `not started`', function(done){
 
       // Given
-      Todos.prototype.update = function(options, callback){
-        callback(null, 123);
-      };
+      Nock(orchestrateUrl)
+      .filteringRequestBody(function(path) {
+          return '*';
+        })
+        .filteringPath(function(path) {
+          return baseUri + '/123';
+        })
+        .put(baseUri + '/123', '*')
+        .reply(200);
 
       internals.prepareServer(function(server){
 
@@ -572,10 +599,6 @@ describe('Todos', function(){
     it('should reject an invalid status', function(done){
 
       // Given
-      Todos.prototype.update = function(options, callback){
-        callback(null, 123);
-      };
-
       internals.prepareServer(function(server){
 
         // When
@@ -599,24 +622,15 @@ describe('Todos', function(){
   });
 
   describe('DELETE', function(){
-    var orig;
-
-    beforeEach(function(done){
-      orig = Todos.prototype.destroy;
-      done();
-    });
-
-    afterEach(function(done){
-      Todos.prototype.destroy = orig;
-      done();
-    });
-
     it('should return a 500 if an error occurs', function(done){
 
       // Given
-      Todos.prototype.destroy = function(options, callback){
-        callback(new Error('Error'));
-      };
+      Nock(orchestrateUrl)
+        .filteringPath(function(path) {
+          return baseUri + '/123';
+        })
+        .delete(baseUri + '/123')
+        .reply(500);
 
       internals.prepareServer(function(server){
 
@@ -634,12 +648,15 @@ describe('Todos', function(){
       });
     });
 
-    it('should return a 200 if successful', function(done){
+    it('should return a 204 if successful', function(done){
 
       // Given
-      Todos.prototype.destroy = function(options, callback){
-        callback(null, options.id);
-      };
+      Nock(orchestrateUrl)
+        .filteringPath(function(path) {
+          return baseUri + '/123';
+        })
+        .delete(baseUri + '/123')
+        .reply(204);
 
       internals.prepareServer(function(server){
 
@@ -650,7 +667,7 @@ describe('Todos', function(){
         }, function(response){
 
           // Then
-          expect(response.statusCode).to.equal(200);
+          expect(response.statusCode).to.equal(204);
 
           done();
         });
