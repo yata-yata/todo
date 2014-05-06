@@ -5,6 +5,9 @@
   "description": "Todo Endpoints",
   "author": "Michael Davis",
   "license": "MIT",
+  "peerDependencies": {
+    "hapi": "4.x.x"
+  },
   "dependencies": {
     "joi": "^3.1.0",
     "hoek": "^2.1.0",
