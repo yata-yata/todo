@@ -43,14 +43,15 @@ describe('Todos', function(){
                     callback(null, {});
 
                     // Then
-                    expect(options).to.equal(null);
+                    expect(options.id).to.be.undefined;
+                    expect(options.user).to.equal('123');
 
                     Todos.prototype.get = orig;
                     done();
                 };
 
                 // When
-                server.inject({ method: 'GET', url: '/todos' }, function(response){});
+                server.inject({ method: 'GET', url: '/users/123/todos' }, function(response){});
             });
         });
 
@@ -70,7 +71,7 @@ describe('Todos', function(){
                 };
 
                 // When
-                server.inject({ method: 'GET', url: '/todos/123' }, function(response){});
+                server.inject({ method: 'GET', url: '/users/123/todos/123' }, function(response){});
             });
         });
 
@@ -85,7 +86,7 @@ describe('Todos', function(){
                 };
 
                 // When
-                server.inject({ method: 'GET', url: '/todos/123' }, function(response){
+                server.inject({ method: 'GET', url: '/users/123/todos/123' }, function(response){
 
                     // Then
                     expect(response.statusCode).to.equal(404);
@@ -107,7 +108,7 @@ describe('Todos', function(){
                 };
 
                 // When
-                server.inject({ method: 'GET', url: '/todos/123' }, function(response){
+                server.inject({ method: 'GET', url: '/users/123/todos/123' }, function(response){
 
                     // Then
                     expect(response.statusCode).to.equal(500);
@@ -129,7 +130,7 @@ describe('Todos', function(){
                 };
 
                 // When
-                server.inject({ method: 'GET', url: '/todos' }, function(response){
+                server.inject({ method: 'GET', url: '/users/123/todos' }, function(response){
 
                     // Then
                     expect(response.statusCode).to.equal(500);
@@ -152,7 +153,7 @@ describe('Todos', function(){
                 // When
                 server.inject({
                     method: 'POST',
-                    url: '/todos',
+                    url: '/users/123/todos',
                     payload: JSON.stringify({})
                 }, function(response){
 
@@ -177,7 +178,7 @@ describe('Todos', function(){
                 // When
                 server.inject({
                     method: 'POST',
-                    url: '/todos',
+                    url: '/users/123/todos',
                     payload: JSON.stringify({
                         title: 'Test',
                         status: 'done'
@@ -205,7 +206,7 @@ describe('Todos', function(){
                 // When
                 server.inject({
                     method: 'POST',
-                    url: '/todos',
+                    url: '/users/123/todos',
                     payload: JSON.stringify({
                         title: 'Test',
                         status: 'in progress'
@@ -233,7 +234,7 @@ describe('Todos', function(){
                 // When
                 server.inject({
                     method: 'POST',
-                    url: '/todos',
+                    url: '/users/123/todos',
                     payload: JSON.stringify({
                         title: 'Test',
                         status: 'not started'
@@ -256,7 +257,7 @@ describe('Todos', function(){
                 // When
                 server.inject({
                     method: 'POST',
-                    url: '/todos',
+                    url: '/users/123/todos',
                     payload: JSON.stringify({
                         title: 'Test',
                         status: 'blah'
@@ -285,7 +286,7 @@ describe('Todos', function(){
                 // When
                 server.inject({
                     method: 'POST',
-                    url: '/todos',
+                    url: '/users/123/todos',
                     payload: JSON.stringify({
                         title: 'Test'
                     })
@@ -312,7 +313,7 @@ describe('Todos', function(){
                 // When
                 server.inject({
                     method: 'POST',
-                    url: '/todos',
+                    url: '/users/123/todos',
                     payload: JSON.stringify({
                         title: 'Test'
                     })
@@ -340,7 +341,7 @@ describe('Todos', function(){
                 // When
                 server.inject({
                     method: 'POST',
-                    url: '/todos',
+                    url: '/users/123/todos',
                     payload: JSON.stringify({
                         title: 'Test'
                     })
@@ -368,7 +369,7 @@ describe('Todos', function(){
                 // When
                 server.inject({
                     method: 'POST',
-                    url: '/todos',
+                    url: '/users/123/todos',
                     payload: JSON.stringify({
                         title: 'Test'
                     })
@@ -400,7 +401,7 @@ describe('Todos', function(){
                 // When
                 server.inject({
                     method: 'PUT',
-                    url: '/todos/123',
+                    url: '/users/123/todos/123',
                     payload: JSON.stringify({
                         title: 'Test',
                         status: 'not started'
@@ -424,7 +425,7 @@ describe('Todos', function(){
                 // When
                 server.inject({
                     method: 'PUT',
-                    url: '/todos/123',
+                    url: '/users/123/todos/123',
                     payload: JSON.stringify({
                     })
                 }, function(response){
@@ -446,7 +447,7 @@ describe('Todos', function(){
                 // When
                 server.inject({
                     method: 'PUT',
-                    url: '/todos/123',
+                    url: '/users/123/todos/123',
                     payload: JSON.stringify({
                     })
                 }, function(response){
@@ -472,7 +473,7 @@ describe('Todos', function(){
                 // When
                 server.inject({
                     method: 'PUT',
-                    url: '/todos/123',
+                    url: '/users/123/todos/123',
                     payload: JSON.stringify({
                         title: 'Test',
                         status: 'done'
@@ -501,7 +502,7 @@ describe('Todos', function(){
                 // When
                 server.inject({
                     method: 'PUT',
-                    url: '/todos/123',
+                    url: '/users/123/todos/123',
                     payload: JSON.stringify({
                         title: 'Test',
                         status: 'in progress'
@@ -530,7 +531,7 @@ describe('Todos', function(){
                 // When
                 server.inject({
                     method: 'PUT',
-                    url: '/todos/123',
+                    url: '/users/123/todos/123',
                     payload: JSON.stringify({
                         title: 'Test',
                         status: 'not started'
@@ -554,7 +555,7 @@ describe('Todos', function(){
                 // When
                 server.inject({
                     method: 'PUT',
-                    url: '/todos/123',
+                    url: '/users/123/todos/123',
                     payload: JSON.stringify({
                         title: 'Test',
                         status: 'blah'
@@ -585,7 +586,7 @@ describe('Todos', function(){
                 // When
                 server.inject({
                     method: 'DELETE',
-                    url: '/todos/123'
+                    url: '/users/123/todos/123'
                 }, function(response){
 
                     // Then
@@ -610,7 +611,7 @@ describe('Todos', function(){
                 // When
                 server.inject({
                     method: 'DELETE',
-                    url: '/todos/123'
+                    url: '/users/123/todos/123'
                 }, function(response){
 
                     // Then
