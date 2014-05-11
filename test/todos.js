@@ -24,8 +24,18 @@ var Lab = require('lab'),
 
 internals.prepareServer = function(callback){
     var server = new Hapi.Server({ labels: ['api'] });
-    server.pack.require('../', {}, function(err){
+    server.pack.require(['../', 'hapi-auth-hawk'], function(err){
+
         expect(err).to.not.exist;
+
+        server.auth.strategy('hawk', 'hawk', { getCredentialsFunc: function(id, callback){
+            return callback({
+                id: 'john',
+                key: 'werxhqb98rpaxn39848xrunpaw3489ruxnpa98w4rxn',
+                algorithm: 'sha256'
+            });
+        }});
+
         callback(server);
     });
 };
