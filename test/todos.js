@@ -1,4 +1,4 @@
-/* jshint expr: true, es5: true */
+/* jshint expr: true */
 
 // Load modules
 var Lab = require('lab'),
@@ -24,8 +24,22 @@ var Lab = require('lab'),
 
 internals.prepareServer = function(callback){
     var server = new Hapi.Server({ labels: ['api'] });
+
+    // Mock api auth
+    server.auth.scheme('api', function(){
+        return {
+            authenticate: function(request, reply){
+                reply(null, { credentials: 'Bob' });
+            }
+        }
+    });
+
+    server.auth.strategy('api', 'api');
+
     server.pack.require('../', {}, function(err){
+
         expect(err).to.not.exist;
+
         callback(server);
     });
 };
@@ -51,7 +65,7 @@ describe('Todos', function(){
                 };
 
                 // When
-                server.inject({ method: 'GET', url: '/users/123/todos' }, function(response){});
+                server.inject({ method: 'GET',url: '/users/123/todos' }, function(response){});
             });
         });
 
