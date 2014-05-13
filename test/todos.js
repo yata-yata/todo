@@ -1,9 +1,10 @@
-/* jshint expr: true, es5: true */
+/* jshint expr: true */
 
 // Load modules
 var Lab = require('lab'),
     Hapi = require('hapi'),
     Todos = require('todos-lib'),
+    Hawk = require('hawk'),
 
     // Declare internals
     internals = {},
@@ -22,22 +23,40 @@ var Lab = require('lab'),
     it = Lab.test,
     assert = Lab.assert;
 
+internals.credentials = {
+    id: 'john',
+    key: 'werxhqb98rpaxn39848xrunpaw3489ruxnpa98w4rxn',
+    algorithm: 'sha256'
+};
+
 internals.prepareServer = function(callback){
-    var server = new Hapi.Server({ labels: ['api'] });
-    server.pack.require(['../', 'hapi-auth-hawk'], function(err){
+    var server = new Hapi.Server('localhost', 8000, { labels: ['api'] });
+    server.pack.require('hapi-auth-hawk', {}, function(err){
 
         expect(err).to.not.exist;
 
         server.auth.strategy('hawk', 'hawk', { getCredentialsFunc: function(id, callback){
-            return callback({
-                id: 'john',
-                key: 'werxhqb98rpaxn39848xrunpaw3489ruxnpa98w4rxn',
-                algorithm: 'sha256'
-            });
+            debugger;
+            return callback(internals.credentials);
         }});
 
-        callback(server);
+        server.pack.require('../', {}, function(err){
+
+            expect(err).to.not.exist;
+
+            callback(server);
+        });
     });
+};
+
+internals.call = function(options, callback){
+    options.server.inject({
+        method: options.method,
+        url: 'http://localhost:8000' + options.url,
+        headers: {
+            authorization: Hawk.client.header('http://localhost:8000' + options.url, options.method, { credentials: internals.credentials }).field
+        }
+    }, callback);
 };
 
 describe('Todos', function(){
@@ -61,7 +80,13 @@ describe('Todos', function(){
                 };
 
                 // When
-                server.inject({ method: 'GET', url: '/users/123/todos' }, function(response){});
+                internals.call({
+                    server: server,
+                    method: 'GET',
+                    url: '/users/123/todos'
+                }, function(response){
+                    debugger;
+                });
             });
         });
 

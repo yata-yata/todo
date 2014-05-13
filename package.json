@@ -21,6 +21,6 @@
     "hawk": "^2.2.0"
   },
   "scripts": {
-    "test": "node ./node_modules/lab/bin/lab -v -c"
+    "test": "node --debug-brk ./node_modules/lab/bin/lab -v -c"
   }
 }
