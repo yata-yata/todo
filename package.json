@@ -6,17 +6,17 @@
   "author": "Michael Davis",
   "license": "MIT",
   "peerDependencies": {
-    "hapi": ">=4"
+    "hapi": ">=4.x"
   },
   "dependencies": {
-    "joi": ">=3",
-    "hoek": ">=2",
-    "boom": ">=2",
+    "joi": ">=3.1.0",
+    "hoek": ">=2.1.0",
+    "boom": ">=2.4.1",
     "todos-lib": "git+https://github.com/yata-yata/todos-lib.git"
   },
   "devDependencies": {
-    "lab": ">=3",
-    "hapi": ">=4"
+    "lab": ">=3.1.1",
+    "hapi": ">=4.1.0"
   },
   "scripts": {
     "test": "node ./node_modules/lab/bin/lab -v -c"
