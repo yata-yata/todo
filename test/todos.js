@@ -235,6 +235,33 @@ describe('Todos', function(){
             });
         });
 
+        it('should accept a valid status of `archived`', function(done){
+
+            // Given
+            internals.prepareServer(function(server){
+
+                var orig = Todos.prototype.create;
+                Todos.prototype.create = function(options, callback){
+                    callback(null, '123');
+                };
+
+                // When
+                server.inject({
+                    method: 'POST',
+                    url: '/users/123/todos',
+                    payload: JSON.stringify({
+                        title: 'Test',
+                        status: 'archived'
+                    })
+                }, function(response){
+
+                    // Then
+                    expect(response.statusCode).to.equal(201);
+                    Todos.prototype.create = orig;
+                    done();
+                });
+            });
+        });
         it('should reject an invalid status', function(done){
 
             // Given
@@ -492,6 +519,35 @@ describe('Todos', function(){
                     payload: JSON.stringify({
                         title: 'Test',
                         status: 'not started'
+                    })
+                }, function(response){
+
+                    // Then
+                    expect(response.statusCode).to.equal(200);
+                    Todos.prototype.update = orig;
+                    done();
+
+                });
+            });
+        });
+
+        it('accepts a valid status of `archived`', function(done){
+
+            // Given
+            internals.prepareServer(function(server){
+
+                var orig = Todos.prototype.update;
+                Todos.prototype.update = function(options, callback){
+                    callback(null, {});
+                };
+
+                // When
+                server.inject({
+                    method: 'PUT',
+                    url: '/users/123/todos/123',
+                    payload: JSON.stringify({
+                        title: 'Test',
+                        status: 'archived'
                     })
                 }, function(response){
 
