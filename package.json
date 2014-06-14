@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "description": "Todo Endpoints",
   "author": "Michael Davis",
-  "license": "MIT",
+  "license": "Artistic-2.0",
   "peerDependencies": {
     "hapi": ">=4.x"
   },
