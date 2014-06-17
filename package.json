@@ -19,6 +19,6 @@
     "hapi": ">=4.1.0"
   },
   "scripts": {
-    "test": "node ./node_modules/lab/bin/lab -v -c"
+    "test": "orchestrateKey=key node ./node_modules/lab/bin/lab -v -c"
   }
 }
