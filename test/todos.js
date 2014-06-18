@@ -36,7 +36,7 @@ internals.prepareServer = function(callback){
 
     server.auth.strategy('api', 'api');
 
-    server.pack.require('../', {}, function(err){
+    server.pack.register([require('../')], function(err){
 
         expect(err).to.not.exist;
 
